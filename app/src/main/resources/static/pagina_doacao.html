@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+    <title>DoacaoMEV</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="pgDoacao.css" type="text/css">
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="campanhas.html">Campanhas</a>
+        <a href="login.html">Acesso Administrativo</a>
+    </nav>
+    <div id="Formulario">
+        <h1>Realizar Doação</h1>
+        <table id="tabelaRealizarDoacao">
+            <tr>
+                <td>Doador:</td>
+                <td><input type="text" id="txtSolicitante"></td>
+            </tr>
+            <tr>
+                <td>Valor:</td>
+                <td><input type="text" id="txtDescricao"></td>
+            </tr>
+            <tr>
+                <td>ID Campanha:</td>
+                <td><input type="text" id="txtId"></td>
+            </tr>
+                <td></td>
+                <td>
+                    <input type="button" value="Salvar" onclick="salvarDoacao()" id="btnSalvar">
+                    <input type="button" value="Cancelar" onclick="cancelarDoacao()" id="btnCancelar">
+                </td>
+            </tr>
+        </table>
+        <h6>Parabéns, por escolher fazer parte da mudança que o mundo precisa!</h6>
+        </div>
+    </div>
+    <script src="rest_doacao.js"></script>
+    <script>
+        window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idCampanha = urlParams.get('campanhaId');
+        if (idCampanha) {
+            document.getElementById("txtId").value = idCampanha;
+        }
+    };
+
+    function salvarDoacao() {
+    const nomeDoador = document.getElementById("txtSolicitante").value;
+    const valor = parseFloat(document.getElementById("txtDescricao").value);
+    const idCampanha = document.getElementById("txtId").value;
+
+    if (nomeDoador && valor && !isNaN(valor)) {
+        // Simula o salvamento local dos dados
+        const doacao = {
+            nomeDoador: nomeDoador,
+            valor: valor,
+            campanha: {
+                id: idCampanha
+            }
+        };
+
+        // Exemplo de armazenamento em um array ou localStorage
+        // Aqui, você pode salvar a doação em um array ou no localStorage
+        let doacoes = JSON.parse(localStorage.getItem("doacoes")) || [];
+        doacoes.push(doacao);
+        localStorage.setItem("doacoes", JSON.stringify(doacoes));
+
+        alert("Doação salva com sucesso!");
+    } else {
+        alert("Preencha todos os campos corretamente.");
+    }
+    asyncLerDoacoes(salvarDoacao,errorHandler);
+}
+
+
+        function cancelarDoacao() {
+            document.getElementById("txtSolicitante").value = '';
+            document.getElementById("txtDescricao").value = '';
+            alert("Operação cancelada.");
+        }
+    </script>
+</body>
+</html>

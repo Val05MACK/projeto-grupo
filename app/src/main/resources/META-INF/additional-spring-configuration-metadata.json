@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "security.public-routes",
+    "type": "java.lang.String",
+    "description": "A description for 'security.public-routes'"
+  },
+  {
+    "name": "cors.allowed-origins",
+    "type": "java.lang.String",
+    "description": "A description for 'cors.allowed-origins'"
+  }
+]}

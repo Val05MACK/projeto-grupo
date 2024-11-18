@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<head>
+    <title>CampanhasMEV</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="pgCampanhas.css" type="text/css">
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="campanhas.html">Campanhas</a>
+        <a href="login.html">Acesso Administrativo</a>
+    </nav>
+    <div id="ctdPrincipal">
+        <h1>Visualizar Campanhas</h1>
+        <p style="font-weight:bold" id="paragrafoMensagem"></p>
+        <table id="tabelaCampanhas">  
+            <tr>
+                <th>ID</th>
+                <th>Solicitante</th>
+                <th>Descrição</th>
+                <th>Meta</th>
+                <th>Doar</th>
+            </tr>
+            <tbody id="corpoTabelaCampanhas"> </tbody>
+        </table>
+    </div>
+    <script src="rest.js"></script>
+    <script>
+        const tabelaCampanhas = document.querySelector('#tabelaCampanhas');
+        const corpoTabela = document.querySelector('#corpoTabelaCampanhas');
+        const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
+
+        inicializar();
+        function inicializar() {
+            paragrafoMensagem.textContent = 'Aqui estão as campanhas disponíveis: ';
+            tabelaCampanhas.style.display = 'inline'; // Correção
+            listarTodasCampanhas();            
+        }
+        function listarTodasCampanhas() {
+            const errorHandler = function(error) { 
+                paragrafoMensagem.textContent = "Erro ao listar Campanhas (código " + error.message + ")";
+            }
+            asyncLerCampanhas(preencherTabela, errorHandler);
+        }
+        function preencherTabela(campanhas) {
+            corpoTabela.innerHTML = "";
+            var n = campanhas.length; 
+            for (var i = 0; i < n; i++) {
+                let p = campanhas[i];
+                let linha = corpoTabela.insertRow();
+                
+                // Inserir células de dados
+                let celulaId = linha.insertCell();
+                let celulaSolicitante = linha.insertCell();
+                let celulaDescricao = linha.insertCell();
+                let celulaMeta = linha.insertCell();
+                let celulaBotao = linha.insertCell();
+
+                // Preencher células com os dados da campanha
+                celulaId.textContent = p.id;
+                celulaSolicitante.textContent = p.solicitante;  // Certifique-se de que o nome correto do campo é 'solicitante'
+                celulaDescricao.textContent = p.descricao;
+                celulaMeta.textContent = p.meta;
+
+                // Adicionar botão "Doar"
+let botaoDoar = document.createElement('button');
+botaoDoar.textContent = "Doar";
+
+// Defina a ação do clique no botão para redirecionar para uma nova página
+botaoDoar.onclick = function() {
+    // Substitua 'pagina_doacao.html' pela URL da página para onde você quer redirecionar
+    window.location.href = 'pagina_doacao.html?campanhaId=' + p.id;
+};
+
+// Adicionar o botão à célula
+celulaBotao.appendChild(botaoDoar);
+
+            }
+        }
+</script>
+
+</body>
+</html>

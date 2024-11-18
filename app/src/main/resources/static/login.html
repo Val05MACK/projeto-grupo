@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://disreputable-cadaver-4jqwg775x9wq2q4wr-8081.app.github.dev/design.css" type="text/css">
+</head>
+<body>
+    <div id="loginDiv">
+        <h1>Entre om Login</h1>
+        <form action="gerenciarDoacao.html" method="GET" onsubmit="return verificarPIN()">
+            <label for="pin">Digite o PIN de Administrador:</label><br>
+            <input type="password" id="pin" name="pin" required><br><br>
+            <input type="submit" value="Entrar">
+        </form>
+        <p id="erroMensagem" style="color:red;"></p>
+    </div>
+
+    <script>
+        function verificarPIN() {
+            const pin = document.getElementById('pin').value;
+            const pinCorreto = '1234';  // Substitua com o PIN desejado
+
+            if (pin === pinCorreto) {
+                return true;  // PIN correto, permite o acesso
+            } else {
+                document.getElementById('erroMensagem').textContent = 'PIN incorreto. Tente novamente.';
+                return false;  // Impede o envio do formulário se o PIN for incorreto
+            }
+        }
+    </script>
+</body>
+</html>

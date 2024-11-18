@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<head>
+    <title>AdminDoacoes</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="pgAdm.css" type="text/css">
+</head>
+
+<body>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="pagina_doacao.html">Doações</a>
+        <a href="login.html">Acesso Administrativo</a>
+
+    </nav>
+    <div id="tableGerenciador">
+        <h1>Administrar Doações</h1>
+        <table id="tabelaGerenciadorDoacoes">
+            <tr>
+                <td>ID:</td>
+                <td><input type="text" id="txtId"></td>
+            </tr>
+            <tr>
+                <td>Solicitante:</td>
+                <td><input type="text" id="txtSolicitante"></td>
+            </tr>
+            <tr>
+                <td>Descrição:</td>
+                <td><input type="text" id="txtDescricao"></td>
+            </tr>
+            <tr>
+                <td>Meta:</td>
+                <td><input type="text" id="txtMeta"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input type="button" value="Salvar" onclick="salvarCampanha()" id="btnSalvar">
+                    <input type="button" value="Apagar" onclick="apagarCampanha()" id="btnApagar">
+                    <input type="button" value="Cancelar" onclick="cancelarCampanha()" id="btnCancelar">
+                </td>
+            </tr>
+        </table>
+        <h6>Altere e salve os dados da Campanha, ou então apague a Campanha</h6>
+        </div>
+    <hr>
+    <!-- Listagem de campanhas -->
+    <div id="ctdListagem">
+        <h1>Visualizar Listagem de Campanhas</h1>
+        <table id="tabelaCampanhas">
+            <thead>
+                <td><input type="button" value="Nova Campanha" onclick="novaCampanha()" id="btnNovo"></td> 
+                <td></td>
+                <td></td>
+                <tr>
+                    <th>ID</th>
+                    <th>Solicitante</th>
+                    <th>Descrição</th>
+                    <th>Meta</th>
+                </tr>
+            </thead>
+            <tbody id="corpoTabelaCampanhas">
+                <!-- Dados das doações serão inseridos aqui via JS -->
+            </tbody>
+        </table>
+        <p id="paragrafoMensagem"></p>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="rest.js"></script>
+    <script>
+        
+        const tabelaCampanhas= document.querySelector('#tabelaCampanhas');
+        const corpoTabela = document.querySelector('#corpoTabelaCampanhas');
+        const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
+        const txtDescricao = document.querySelector('#txtDescricao');
+        const txtSolicitante = document.querySelector('#txtSolicitante');
+        const txtMeta = document.querySelector('#txtMeta');
+        const txtId=document.querySelector('#txtId');
+
+        const btnApagar=document.querySelector('#btnApagar');
+        const btnCancelar= document.querySelector('#btnCancelar');
+        const btnSalvar=document.querySelector('#btnSalvar');
+        const btnNovo = document.querySelector('#btnNovo');
+        var criandoNovaCampanha=false;
+
+        inicializar();
+
+        function inicializar(){
+            criandoNovaCampanha=false;
+            paragrafoMensagem.textContent='Pressione o botão novo ou selecione uma Campanha da lista: '
+            txtId.value='';
+            txtSolicitante.value='';
+            txtDescricao.value='';
+            txtMeta.value='';
+
+
+            listarTodasCampanhas();
+        }
+        function listarTodasCampanhas() {
+            const errorHandler = function(error) { 
+                paragrafoMensagem.textContent = "Erro ao listar Campanhas (código " + error.message + ")";
+            }
+            asyncLerCampanhas(preencherTabela, errorHandler);
+        }
+        function preencherTabela(campanhas) {
+            corpoTabela.innerHTML = "";
+            var n = campanhas.length; 
+            for (var i = 0; i < n; i++) {
+                let p = campanhas[i];
+                let linha = corpoTabela.insertRow();
+                
+                // Inserir células de dados
+                let celulaId = linha.insertCell();
+                let celulaSolicitante = linha.insertCell();
+                let celulaDescricao = linha.insertCell();
+                let celulaMeta = linha.insertCell();
+                let celulaBotao = linha.insertCell();
+
+                // Preencher células com os dados da campanha
+                celulaId.textContent = p.id;
+                celulaSolicitante.textContent = p.solicitante;  // Certifique-se de que o nome correto do campo é 'solicitante'
+                celulaDescricao.textContent = p.descricao;
+                celulaMeta.textContent = p.meta;
+            }
+           
+        }
+        function salvarCampanha() {
+        const campanha = {
+            id: document.querySelector('#txtId').value,
+            solicitanteDoacao: document.querySelector('#txtSolicitante').value,
+            descricao: document.querySelector('#txtDescricao').value,
+            meta: document.querySelector('#txtMeta').value
+        };
+        
+        // Chame a função no arquivo externo com os dados coletados
+        enviarCampanha(campanha);
+    }
+    
+    
+        </script>
+       </body>
+</html>
