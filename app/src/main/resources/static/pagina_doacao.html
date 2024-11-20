@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-    <title>DoacaoMEV</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoacaoMEV</title>
     <link rel="stylesheet" href="pgDoacao.css" type="text/css">
 </head>
-
 <body>
     <nav>
         <a href="index.html">Home</a>
@@ -26,58 +27,62 @@
                 <td>ID Campanha:</td>
                 <td><input type="text" id="txtId"></td>
             </tr>
+            <tr>
                 <td></td>
                 <td>
                     <input type="button" value="Salvar" onclick="salvarDoacao()" id="btnSalvar">
-                    <input type="button" value="Cancelar" onclick="cancelarDoacao()" id="btnCancelar">
+                    <input type="button" value="Cancelar" onclick="cancelarOperacao()" id="btnCancelar">
                 </td>
             </tr>
         </table>
         <h6>Parabéns, por escolher fazer parte da mudança que o mundo precisa!</h6>
-        </div>
     </div>
     <script src="rest_doacao.js"></script>
     <script>
-        window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const idCampanha = urlParams.get('campanhaId');
-        if (idCampanha) {
-            document.getElementById("txtId").value = idCampanha;
-        }
-    };
-
-    function salvarDoacao() {
-    const nomeDoador = document.getElementById("txtSolicitante").value;
-    const valor = parseFloat(document.getElementById("txtDescricao").value);
-    const idCampanha = document.getElementById("txtId").value;
-
-    if (nomeDoador && valor && !isNaN(valor)) {
-        // Simula o salvamento local dos dados
-        const doacao = {
-            nomeDoador: nomeDoador,
-            valor: valor,
-            campanha: {
-                id: idCampanha
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const idCampanha = urlParams.get('campanhaId');
+            if (idCampanha) {
+                document.getElementById("txtId").value = idCampanha;
             }
         };
 
-        // Exemplo de armazenamento em um array ou localStorage
-        // Aqui, você pode salvar a doação em um array ou no localStorage
-        let doacoes = JSON.parse(localStorage.getItem("doacoes")) || [];
-        doacoes.push(doacao);
-        localStorage.setItem("doacoes", JSON.stringify(doacoes));
+        function salvarDoacao() {
+            const nomeDoador = document.getElementById("txtSolicitante").value;
+            const valor = parseFloat(document.getElementById("txtDescricao").value);
+            const idCampanha = document.getElementById("txtId").value;
 
-        alert("Doação salva com sucesso!");
-    } else {
-        alert("Preencha todos os campos corretamente.");
-    }
-    asyncLerDoacoes(salvarDoacao,errorHandler);
-}
+            if (nomeDoador && valor && !isNaN(valor)) {
+                const doacao = {
+                    nomeDoador: nomeDoador,
+                    valor: valor,
+                    campanha: { id: idCampanha }
+                };
 
+                enviarDoacao(
+                    doacao,
+                    () => {
+                        alert("Doação salva com sucesso!");
+                        limparFormulario();
+                    },
+                    (erro) => {
+                        console.error("Erro ao salvar doação:", erro);
+                        alert("Erro ao salvar a doação. Tente novamente.");
+                    }
+                );
+            } else {
+                alert("Preencha todos os campos corretamente.");
+            }
+        }
 
-        function cancelarDoacao() {
+        function limparFormulario() {
             document.getElementById("txtSolicitante").value = '';
             document.getElementById("txtDescricao").value = '';
+            document.getElementById("txtId").value = '';
+        }
+
+        function cancelarOperacao() {
+            limparFormulario();
             alert("Operação cancelada.");
         }
     </script>

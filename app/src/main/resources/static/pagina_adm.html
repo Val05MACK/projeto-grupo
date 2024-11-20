@@ -1,17 +1,18 @@
 <!DOCTYPE html>
+<html lang="pt-br">
 <head>
-    <title>AdminDoacoes</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdminDoacoes</title>
     <link rel="stylesheet" href="pgAdm.css" type="text/css">
 </head>
-
 <body>
     <nav>
         <a href="index.html">Home</a>
         <a href="pagina_doacao.html">Doações</a>
         <a href="login.html">Acesso Administrativo</a>
-
     </nav>
+
     <div id="tableGerenciador">
         <h1>Administrar Doações</h1>
         <table id="tabelaGerenciadorDoacoes">
@@ -35,15 +36,16 @@
                 <td></td>
                 <td>
                     <input type="button" value="Salvar" onclick="salvarCampanha()" id="btnSalvar">
-                    <input type="button" value="Apagar" onclick="apagarCampanha()" id="btnApagar">
+                    <input type="button" value="Apagar" onclick="apagarCampanhaSelecionada()" id="btnApagar">
                     <input type="button" value="Cancelar" onclick="cancelarCampanha()" id="btnCancelar">
                 </td>
             </tr>
         </table>
         <h6>Altere e salve os dados da Campanha, ou então apague a Campanha</h6>
-        </div>
+    </div>
+
     <hr>
-    <!-- Listagem de campanhas -->
+
     <div id="ctdListagem">
         <h1>Visualizar Listagem de Campanhas</h1>
         <table id="tabelaCampanhas">
@@ -56,6 +58,7 @@
                     <th>Solicitante</th>
                     <th>Descrição</th>
                     <th>Meta</th>
+                    <th>Doadores</th>
                 </tr>
             </thead>
             <tbody id="corpoTabelaCampanhas">
@@ -63,81 +66,137 @@
             </tbody>
         </table>
         <p id="paragrafoMensagem"></p>
-
     </div>
 
     <!-- Scripts -->
     <script src="rest.js"></script>
     <script>
-        
-        const tabelaCampanhas= document.querySelector('#tabelaCampanhas');
+        const tabelaCampanhas = document.querySelector('#tabelaCampanhas');
         const corpoTabela = document.querySelector('#corpoTabelaCampanhas');
         const paragrafoMensagem = document.querySelector('#paragrafoMensagem');
         const txtDescricao = document.querySelector('#txtDescricao');
         const txtSolicitante = document.querySelector('#txtSolicitante');
         const txtMeta = document.querySelector('#txtMeta');
-        const txtId=document.querySelector('#txtId');
+        const txtId = document.querySelector('#txtId');
 
-        const btnApagar=document.querySelector('#btnApagar');
-        const btnCancelar= document.querySelector('#btnCancelar');
-        const btnSalvar=document.querySelector('#btnSalvar');
+        const btnApagar = document.querySelector('#btnApagar');
+        const btnCancelar = document.querySelector('#btnCancelar');
+        const btnSalvar = document.querySelector('#btnSalvar');
         const btnNovo = document.querySelector('#btnNovo');
-        var criandoNovaCampanha=false;
+        var criandoNovaCampanha = false;
+
+        let campanhaSelecionadaId = null;
 
         inicializar();
 
-        function inicializar(){
-            criandoNovaCampanha=false;
-            paragrafoMensagem.textContent='Pressione o botão novo ou selecione uma Campanha da lista: '
-            txtId.value='';
-            txtSolicitante.value='';
-            txtDescricao.value='';
-            txtMeta.value='';
-
+        function inicializar() {
+            criandoNovaCampanha = false;
+            paragrafoMensagem.textContent = 'Pressione o botão novo ou selecione uma Campanha da lista: ';
+            txtId.value = '';
+            txtSolicitante.value = '';
+            txtDescricao.value = '';
+            txtMeta.value = '';
+            campanhaSelecionadaId = null;
 
             listarTodasCampanhas();
         }
+
         function listarTodasCampanhas() {
-            const errorHandler = function(error) { 
+            const errorHandler = function (error) {
                 paragrafoMensagem.textContent = "Erro ao listar Campanhas (código " + error.message + ")";
             }
             asyncLerCampanhas(preencherTabela, errorHandler);
         }
+
         function preencherTabela(campanhas) {
             corpoTabela.innerHTML = "";
-            var n = campanhas.length; 
+            var n = campanhas.length;
             for (var i = 0; i < n; i++) {
                 let p = campanhas[i];
                 let linha = corpoTabela.insertRow();
-                
+
                 // Inserir células de dados
                 let celulaId = linha.insertCell();
                 let celulaSolicitante = linha.insertCell();
                 let celulaDescricao = linha.insertCell();
                 let celulaMeta = linha.insertCell();
+                let celulaDoadores = linha.insertCell();
                 let celulaBotao = linha.insertCell();
 
                 // Preencher células com os dados da campanha
                 celulaId.textContent = p.id;
-                celulaSolicitante.textContent = p.solicitante;  // Certifique-se de que o nome correto do campo é 'solicitante'
+                celulaSolicitante.textContent = p.solicitante;
                 celulaDescricao.textContent = p.descricao;
                 celulaMeta.textContent = p.meta;
+
+                // Lista os doadores como uma lista não ordenada
+                let doadoresList = '';
+                if (p.doador && p.doador.length > 0) {
+                    doadoresList = '<ul>';
+                    p.doador.forEach(doador => {
+                        doadoresList += `<li>${doador.nome}</li>`;
+                    });
+                    doadoresList += '</ul>';
+                } else {
+                    doadoresList = 'Nenhum doador registrado';
+                }
+
+                celulaDoadores.innerHTML = doadoresList;
+
+                // Adicionar botão de edição e deleção
+                let btnEditar = document.createElement('button');
+                btnEditar.textContent = 'Editar';
+                btnEditar.onclick = () => editarCampanha(p);
+                celulaBotao.appendChild(btnEditar);
+                
+                let btnExcluir = document.createElement('button');
+                btnExcluir.textContent = 'Excluir';
+                btnExcluir.onclick = () => apagarCampanha(p.id);
+                celulaBotao.appendChild(btnExcluir);
             }
-           
         }
+
+        function editarCampanha(campanha) {
+            txtId.value = campanha.id;
+            txtSolicitante.value = campanha.solicitante;
+            txtDescricao.value = campanha.descricao;
+            txtMeta.value = campanha.meta;
+            campanhaSelecionadaId = campanha.id;
+        }
+
         function salvarCampanha() {
-        const campanha = {
-            id: document.querySelector('#txtId').value,
-            solicitanteDoacao: document.querySelector('#txtSolicitante').value,
-            descricao: document.querySelector('#txtDescricao').value,
-            meta: document.querySelector('#txtMeta').value
-        };
-        
-        // Chame a função no arquivo externo com os dados coletados
-        enviarCampanha(campanha);
-    }
-    
-    
-        </script>
-       </body>
+            const campanha = {
+                id: document.querySelector('#txtId').value,
+                solicitanteDoacao: document.querySelector('#txtSolicitante').value,
+                descricao: document.querySelector('#txtDescricao').value,
+                meta: document.querySelector('#txtMeta').value
+            };
+
+            if (campanhaSelecionadaId) {
+                campanha.id = campanhaSelecionadaId;
+                atualizarCampanha(campanha);
+            } else {
+                enviarCampanha(campanha);
+            }
+
+            inicializar();
+        }
+
+        function apagarCampanhaSelecionada() {
+            if (campanhaSelecionadaId) {
+                apagarCampanha(campanhaSelecionadaId);
+                inicializar();
+            }
+        }
+
+        function novaCampanha() {
+            criandoNovaCampanha = true;
+            paragrafoMensagem.textContent = 'Preencha os campos da nova Campanha';
+        }
+
+        function cancelarCampanha() {
+            inicializar();
+        }
+    </script>
+</body>
 </html>
