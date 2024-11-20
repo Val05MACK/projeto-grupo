@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login de Usuário</title>
+    <link rel="stylesheet" href="pgLogin.css" type="text/css">
+</head>
+<body>
+    <div id="loginDiv">
+        <h1>Login de Usuário</h1>
+        <form action="campanhas.html" method="GET" onsubmit="return verificarLogin()">
+            <label for="username">Nome de Usuário:</label><br>
+            <input type="text" id="username" name="username" required><br><br>
+            
+            <label for="password">Senha:</label><br>
+            <input type="password" id="password" name="password" required><br><br>
+            
+            <input type="submit" value="Entrar">
+        </form>
+        <p id="erroMensagem" style="color:red;"></p>
+    </div>
+
+    <script>
+        function verificarLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const usuarioCorreto = 'admin';  // Substitua pelo nome de usuário correto
+            const senhaCorreta = '12345';   // Substitua pela senha correta
+
+            if (username === usuarioCorreto && password === senhaCorreta) {
+                return true;  // Nome de usuário e senha corretos, permite o acesso
+            } else {
+                document.getElementById('erroMensagem').textContent = 
+                    'Nome de usuário ou senha incorretos. Tente novamente.';
+                return false;  // Impede o envio do formulário se as credenciais forem incorretas
+            }
+        }
+    </script>
+</body>
+</html>
